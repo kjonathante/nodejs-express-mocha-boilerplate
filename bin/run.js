@@ -5,7 +5,7 @@ const log = config.log();
 
 log.info(config.googleId);
 
-const service = require("../server/service"); //(config);
+const service = require("../server/service")(config);
 const http = require("http");
 const server = http.createServer(service);
 
