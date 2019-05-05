@@ -10,6 +10,7 @@ const log = {
 module.exports = {
   googleId: process.env.GOOGLE_ID,
   appleId: process.env.APPLE_ID,
+  appApiToken: process.env.APP_API_TOKEN,
   log: env => {
     if (env) return log[env]();
     return log[process.env.NODE_ENV || "development"]();

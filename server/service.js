@@ -3,19 +3,29 @@
 const express = require("express");
 const service = express();
 
-service.get("/service/:location", (req, res) => {
-  res.json({ result: req.params.location });
-});
+module.exports = config => {
+  service.get("/service/:location", (req, res) => {
+    res.json({ result: req.params.location });
+  });
 
-service.put("/service/:intent/:port", (req, res) => {
-  const serviceIntent = req.params.intent;
-  const servicePort = req.params.port;
+  service.put("/service/:intent/:port", (req, res) => {
+    if (req.get("X-APP-API-TOKEN") !== config.appApiToken) {
+      return res.sendStatus(403);
+    }
 
-  const serviceIp = req.connection.remoteAddress.includes("::")
-    ? `[${req.connection.remoteAddress}]`
-    : req.connection.remoteAddress;
+    if (!req.get("X-APP-SERVICE-TOKEN")) {
+      return res.sendStatus(400);
+    }
+    
+    const serviceIntent = req.params.intent;
+    const servicePort = req.params.port;
 
-  res.json({ result: `${serviceIntent} at ${serviceIp}:${servicePort}` });
-});
+    const serviceIp = req.connection.remoteAddress.includes("::")
+      ? `[${req.connection.remoteAddress}]`
+      : req.connection.remoteAddress;
 
-module.exports = service;
+    res.json({ result: `${serviceIntent} at ${serviceIp}:${servicePort}` });
+  });
+
+  return service;
+};
